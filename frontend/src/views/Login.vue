@@ -26,6 +26,8 @@ import {reactive,ref} from 'vue';
 import {User,Lock} from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { Login as loginApi } from '@/api/auth'
+import { useUser } from '@/utils/user'
 
 const form = reactive({
     username:'',
@@ -37,14 +39,24 @@ const loadingValue = ref(false)
 
 const router = useRouter()
 
-const login = () => {
-    // 暂时是模拟
+const { saveLoginData } = useUser()
+
+const login = async () => {
     loadingValue.value = true
-    setTimeout(() => {
-        ElMessage.success('登录成功')
-        router.push('/manager/home')
+    try {
+        const res = await loginApi(form)
+        if (res.code === 200) {
+            saveLoginData(res.data)
+            ElMessage.success('登录成功')
+            router.push('/manager/home')
+        } else {
+            ElMessage.error(res.message || '登录失败')
+        }
+    } catch (e) {
+        ElMessage.error('网络异常，请稍后再试')
+    } finally {
         loadingValue.value = false
-    }, 2000)
+    }
 }
 
 </script>

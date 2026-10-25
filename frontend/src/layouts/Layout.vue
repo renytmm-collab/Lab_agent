@@ -14,7 +14,7 @@
                 </div>
                 <template #dropdown>
                     <el-dropdown-menu>
-                        <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+                        <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -52,10 +52,12 @@
 <script setup>
 import {Document,Menu as IconMenu,Location,Setting,User,House} from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { logout } from '@/utils/auth'
 
 const router = useRouter()
 
-const logout = () => {
+const handleLogout = () => {
+    logout()
     router.push('/login')
 }
 

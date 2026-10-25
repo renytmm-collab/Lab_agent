@@ -23,5 +23,8 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         raise BusinessException(code=403, message="账号已经被禁用")
     #生成token
     access_token = create_access_token(user.id)
-    return response.success(data=UserResponse.model_validate(user), message="登录成功", extra={"token": access_token})
+    return response.success(
+        message="登录成功",
+        data={"token": access_token, "user": UserResponse.model_validate(user).model_dump()},
+    )
 
