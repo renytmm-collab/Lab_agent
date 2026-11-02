@@ -3,19 +3,18 @@
         <div class="login-box">
             <h1 style="font-size:28px">实验室预约系统</h1>
             <div style="margin-top:5px;margin-bottom:20px">基于agent的智能预约系统</div>
-            <el-form :model="form" label-width="auto" style="max-width:600px">
-                <el-form-item>
+            
+            <el-form ref="formRef" :rules="rules" :model="form" label-width="0px" style="width:100%">
+                <el-form-item prop="username">
                     <el-input size="large" v-model="form.username" placeholder="请输入用户名" :prefix-icon="User" />
                 </el-form-item>
-            </el-form>
-            <el-form :model="form" label-width="auto" style="max-width:600px">
-                <el-form-item>
+                <el-form-item prop="password">
                     <el-input type="password" size="large" v-model="form.password" placeholder="请输入密码" :prefix-icon="Lock" show-password />
                 </el-form-item>
             </el-form>
             <div>
                 <el-button type="primary" size="large" style="width:100% "@click="login" :loading="loadingValue">登录</el-button>
-                <div style="text-align:right;margin-top:20px">还没有账号？请 <a style="color:var(--el-color-primary)"href="/register">注册</a></div>
+                <div style="text-align:right;margin-top:20px">还没有账号？请 <router-link style="color:var(--el-color-primary)" to="/register">注册</router-link></div>
             </div>
         </div>
     </div>
@@ -29,6 +28,8 @@ import { useRouter } from 'vue-router'
 import { Login as loginApi } from '@/api/auth'
 import { useUser } from '@/utils/user'
 
+const formRef = ref(null)
+
 const form = reactive({
     username:'',
     password:''
@@ -37,11 +38,22 @@ const form = reactive({
 
 const loadingValue = ref(false)
 
+const rules={
+    username: [
+        { required: true, message: '请输入账号', trigger: 'blur' }
+    ],
+    password: [
+        { required: true, message: '请输入密码', trigger: 'blur' }
+    ]
+}
+
 const router = useRouter()
 
 const { saveLoginData } = useUser()
 
 const login = async () => {
+    const valid=await formRef.value.validate().catch(()=>false)
+    if(!valid){return}
     loadingValue.value = true
     try {
         const res = await loginApi(form)
